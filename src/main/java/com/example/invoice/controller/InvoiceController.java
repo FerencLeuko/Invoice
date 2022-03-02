@@ -26,21 +26,25 @@ public class InvoiceController implements InvoiceApi
 {
 	private static final String PATH = "localhost:8081";
 	
+	@Override
 	public List<InvoiceBean> getAllInvoices( )
 	{
 		return _invoiceService.getAllInvoices();
 	}
 	
+	@Override
 	public List<InvoiceBean> getInvoices(Integer from, Integer to )
 	{
 		return _invoiceService.getInvoices( from, to );
 	}
 	
+	@Override
 	public InvoiceBean getInvoice( Integer invoiceId )
 	{
 		return _invoiceService.getInvoice( invoiceId );
 	}
 	
+	@Override
 	public ResponseEntity<InvoiceBean> postInvoice( InvoiceCreate invoiceCreate, BindingResult errors ) throws RuntimeException
 	{
 		if (errors.hasErrors()) {
