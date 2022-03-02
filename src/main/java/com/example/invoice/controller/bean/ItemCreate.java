@@ -23,7 +23,6 @@ public class ItemCreate
 	
 	@NotNull
 	@Min(value = 0, message = "The price must be positive")
-	@Positive
 	private Double unitPrice;
 	
 	@NotNull
