@@ -23,27 +23,27 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://127.0.0.1:5500/")
+@CrossOrigin(origins = {"http://127.0.0.1:5500/" , "http://127.0.0.1:4200/", "http://127.0.0.1:4201/"} )
 public class InvoiceController implements InvoiceApi
 {
 	private static final String PATH = "localhost:8081";
 	
 	@Override
-	public List<InvoiceBean> getAllInvoices( )
+	public ResponseEntity<List<InvoiceBean>> getAllInvoices( )
 	{
-		return _invoiceService.getAllInvoices();
+		return ResponseEntity.ok(_invoiceService.getAllInvoices());
 	}
 	
 	@Override
-	public List<InvoiceBean> getInvoices(Integer from, Integer to )
+	public ResponseEntity<List<InvoiceBean>> getInvoices(Integer from, Integer to )
 	{
-		return _invoiceService.getInvoices( from, to );
+		return ResponseEntity.ok(_invoiceService.getInvoices( from, to ));
 	}
 	
 	@Override
-	public InvoiceBean getInvoice( Integer invoiceId )
+	public ResponseEntity<InvoiceBean> getInvoice( Integer invoiceId )
 	{
-		return _invoiceService.getInvoice( invoiceId );
+		return ResponseEntity.ok(_invoiceService.getInvoice( invoiceId ));
 	}
 	
 	@Override

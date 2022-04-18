@@ -18,16 +18,16 @@ public interface InvoiceApi
 {
 	@GetMapping( "/allInvoices" )
 	@ResponseBody
-	List<InvoiceBean> getAllInvoices( );
+	ResponseEntity<List<InvoiceBean>> getAllInvoices( );
 	
 	@GetMapping( "/invoices" )
 	@ResponseBody
-	public List<InvoiceBean> getInvoices(@RequestParam( value = "from" ) Integer from,
+	ResponseEntity<List<InvoiceBean>> getInvoices(@RequestParam( value = "from" ) Integer from,
 			@RequestParam( value = "to" ) Integer to );
 	
 	@GetMapping( "/invoice" )
 	@ResponseBody
-	public InvoiceBean getInvoice(@RequestParam( value = "invoiceId" ) Integer invoiceId);
+	ResponseEntity<InvoiceBean> getInvoice(@RequestParam( value = "invoiceId" ) Integer invoiceId);
 	
 	@PostMapping( "/invoice" )
 	@ResponseBody
