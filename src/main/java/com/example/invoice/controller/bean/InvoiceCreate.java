@@ -10,13 +10,16 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 
 @Builder
-@Value
 @Validated
-public class InvoiceCreate
+@Getter
+@Setter
+public final class InvoiceCreate
 {
 	@NotNull
 	@NotBlank
@@ -30,6 +33,8 @@ public class InvoiceCreate
 	@NotNull
 	private LocalDate dueDate;
 	
+	@Size(min = 2, max = 50, message
+			= "Comment size must be between 2 and 50 characters")
 	private String comment;
 	
 	@NotNull

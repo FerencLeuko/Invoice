@@ -17,11 +17,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://127.0.0.1:5500/")
 public class InvoiceController implements InvoiceApi
 {
 	private static final String PATH = "localhost:8081";
@@ -66,19 +68,19 @@ public class InvoiceController implements InvoiceApi
 	{
 		return new ResponseEntity<ErrorResponse>( new ErrorResponse( e.getMessage() ), HttpStatus.BAD_REQUEST );
 	}
-	
+
 	@ExceptionHandler(  { InvoiceNotFoundException.class } )
 	public ResponseEntity<ErrorResponse> handleArgumentExceptions( InvoiceNotFoundException e )
 	{
 		return new ResponseEntity<ErrorResponse>( new ErrorResponse( e.getMessage() ), HttpStatus.BAD_REQUEST );
 	}
-	
+
 	@ExceptionHandler(  { ValidationException.class } )
 	public ResponseEntity<ErrorResponse> handleArgumentExceptions( ValidationException e )
 	{
 		return new ResponseEntity<ErrorResponse>( new ErrorResponse( e.getMessage() ), HttpStatus.BAD_REQUEST );
 	}
-	
+
 	@ExceptionHandler(  { RuntimeException.class } )
 	public ResponseEntity<ErrorResponse> handleRuntimeExceptions( RuntimeException e )
 	{

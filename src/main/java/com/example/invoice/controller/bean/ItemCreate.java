@@ -1,5 +1,6 @@
 package com.example.invoice.controller.bean;
 
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -7,12 +8,15 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 
 @Validated
 @Builder
-@Value
+@Getter
+@Setter
 public class ItemCreate
 {
 	@NotNull
@@ -22,7 +26,7 @@ public class ItemCreate
 	private String productName;
 	
 	@NotNull
-	@Min(value = 0, message = "The price must be positive")
+	@DecimalMin(value = "0.01", message = "The price must be positive")
 	private Double unitPrice;
 	
 	@NotNull
