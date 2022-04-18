@@ -41,7 +41,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith( SpringRunner.class)
 @SpringBootTest
-public class InvoiceServiceTest
+public class InvoiceTest
 {
 	/* Database details for Spring are configured in test/application.properties for the test
 	Warning : if USE_MySQL, all entries are deleted from test db specified in test/application.properties */
