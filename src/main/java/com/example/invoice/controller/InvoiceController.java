@@ -12,6 +12,8 @@ import com.example.invoice.exception.ErrorResponse;
 import com.example.invoice.exception.InvoiceNotFoundException;
 import com.example.invoice.exception.InvoiceValidationException;
 import com.example.invoice.exception.UnsupportedParameterException;
+import com.example.invoice.persistance.entity.Invoice;
+import com.example.invoice.service.InvoiceMapper;
 import com.example.invoice.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,19 +33,28 @@ public class InvoiceController implements InvoiceApi
 	@Override
 	public ResponseEntity<List<InvoiceBean>> getAllInvoices( )
 	{
-		return ResponseEntity.ok(_invoiceService.getAllInvoices());
+		List<Invoice> allInvoices = _invoiceService.getAllInvoices();
+		return ResponseEntity.ok(
+				allInvoices.stream()
+				.map( i -> _invoiceMapper.invoiceToInvoiceBean( i ) )
+				.collect( Collectors.toList()) );
 	}
 	
 	@Override
 	public ResponseEntity<List<InvoiceBean>> getInvoices(Integer from, Integer to )
 	{
-		return ResponseEntity.ok(_invoiceService.getInvoices( from, to ));
+		List<Invoice> invoices = _invoiceService.getInvoices( from, to );
+		return ResponseEntity.ok(
+				invoices.stream()
+						.map( i -> _invoiceMapper.invoiceToInvoiceBean( i ) )
+						.collect( Collectors.toList() ) );
 	}
 	
 	@Override
 	public ResponseEntity<InvoiceBean> getInvoice( Integer invoiceId )
 	{
-		return ResponseEntity.ok(_invoiceService.getInvoice( invoiceId ));
+		Invoice invoice = _invoiceService.getInvoice( invoiceId );
+		return ResponseEntity.ok( _invoiceMapper.invoiceToInvoiceBean( invoice ) );
 	}
 	
 	@Override
@@ -56,11 +67,13 @@ public class InvoiceController implements InvoiceApi
 					.collect( Collectors.toList())));
 		}
 		
-		InvoiceBean invoice = _invoiceService.createInvoice( invoiceCreate );
-		URI location = URI.create( PATH + "/invoice/?invoiceId=" + invoice.getId() );
+		Invoice invoiceSource = _invoiceMapper.invoiceCreateToInvoice( invoiceCreate );
+		
+		Invoice invoiceCreated = _invoiceService.createInvoice( invoiceSource );
+		URI location = URI.create( PATH + "/invoice/?invoiceId=" + invoiceSource.getId() );
 		
 		return ResponseEntity.created( location )
-				.body( invoice );
+				.body( _invoiceMapper.invoiceToInvoiceBean( invoiceCreated ));
 	}
 	
 	@ExceptionHandler(  { UnsupportedParameterException.class } )
@@ -87,5 +100,12 @@ public class InvoiceController implements InvoiceApi
 		return new ResponseEntity<ErrorResponse>( new ErrorResponse( e.getMessage() ), HttpStatus.INTERNAL_SERVER_ERROR );
 	}
 	
+	protected static InvoiceMapper getInvoiceMapper()
+	{
+		return new InvoiceMapper();
+	}
+	
+	protected static InvoiceMapper _invoiceMapper = getInvoiceMapper();
 	private final InvoiceService _invoiceService;
+	
 }

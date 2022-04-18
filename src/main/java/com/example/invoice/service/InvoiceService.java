@@ -4,14 +4,15 @@ import java.util.List;
 
 import com.example.invoice.controller.bean.InvoiceBean;
 import com.example.invoice.controller.bean.InvoiceCreate;
+import com.example.invoice.persistance.entity.Invoice;
 
 public interface InvoiceService
 {
-	List<InvoiceBean> getAllInvoices();
+	List<Invoice> getAllInvoices();
 	
-	List<InvoiceBean> getInvoices( Integer from, Integer to);
+	List<Invoice> getInvoices( Integer from, Integer to);
 	
-	InvoiceBean getInvoice( Integer id );
+	Invoice getInvoice( Integer id );
 	
-	InvoiceBean createInvoice( InvoiceCreate invoiceCreate );
+	Invoice createInvoice( Invoice invoice );
 }

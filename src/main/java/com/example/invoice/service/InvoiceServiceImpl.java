@@ -22,22 +22,22 @@ import org.springframework.stereotype.Service;
 public class InvoiceServiceImpl implements InvoiceService
 {
 	@Override
-	public List<InvoiceBean> getAllInvoices()
+	public List<Invoice> getAllInvoices()
 	{
 		List<Invoice> invoices = _invoiceRepository.findAll();
-		return invoices.stream().map( i -> _invoiceMapper.invoiceToInvoiceBean( i ) ).collect( Collectors.toList());
+		return invoices;
 	}
 	
 	@Override
-	public List<InvoiceBean> getInvoices( Integer from, Integer to )
+	public List<Invoice> getInvoices( Integer from, Integer to )
 	{
 		validateParamsFromTo( from, to );
-		List<InvoiceBean> invoices = new ArrayList<>();
+		List<Invoice> invoices = new ArrayList<>();
 		for( ; from <= to; from++ )
 		{
 			try
 			{
-				InvoiceBean invoice = getInvoice( from );
+				Invoice invoice = getInvoice( from );
 				invoices.add( invoice );
 			}
 			catch( IllegalArgumentException e )
@@ -48,12 +48,12 @@ public class InvoiceServiceImpl implements InvoiceService
 	}
 	
 	@Override
-	public InvoiceBean getInvoice( Integer id )
+	public Invoice getInvoice( Integer id )
 	{
 		try
 		{
 			Invoice invoice = _invoiceRepository.findById( id ).get();
-			return _invoiceMapper.invoiceToInvoiceBean( invoice );
+			return invoice;
 		}
 		catch( NoSuchElementException e )
 		{
@@ -63,15 +63,13 @@ public class InvoiceServiceImpl implements InvoiceService
 	}
 	
 	@Override
-	public InvoiceBean createInvoice( InvoiceCreate invoiceCreate )
+	public Invoice createInvoice( Invoice invoice )
 	{
-		Invoice invoice = _invoiceMapper.invoiceCreateToInvoice( invoiceCreate );
-		
 		setInvoiceIdsInItems( invoice );
 		setTotalPrices( invoice );
 		_invoiceRepository.save( invoice );
 		
-		return _invoiceMapper.invoiceToInvoiceBean( invoice );
+		return invoice;
 	}
 	
 	private void setInvoiceIdsInItems( Invoice invoice )
@@ -114,15 +112,8 @@ public class InvoiceServiceImpl implements InvoiceService
 		return huf / eurHufRate;
 	}
 	
-	protected static InvoiceMapper getInvoiceMapper()
-	{
-		return new InvoiceMapper();
-	}
-	
 	private static final int MAX_ENVOICES_RETURN_FROM_TO = 20;
-	
 	private static Logger _logger = LogManager.getLogger();
-	protected static InvoiceMapper _invoiceMapper = getInvoiceMapper();
 	
 	private final InvoiceRepository _invoiceRepository;
 	private final EurHufRateApiService _eurHufRateService;

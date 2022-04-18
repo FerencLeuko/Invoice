@@ -1,4 +1,4 @@
-package com.example.invoice.service;
+package com.example.invoice.controller;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.example.invoice.controller.InvoiceController;
 import com.example.invoice.controller.bean.InvoiceBean;
 import com.example.invoice.controller.bean.InvoiceCreate;
 import com.example.invoice.controller.bean.ItemBean;
@@ -23,6 +24,11 @@ import com.example.invoice.controller.bean.ItemCreate;
 import com.example.invoice.persistance.entity.Invoice;
 import com.example.invoice.persistance.entity.Item;
 import com.example.invoice.persistance.repository.InvoiceRepository;
+import com.example.invoice.service.EurHufRateApiService;
+import com.example.invoice.service.EurHufRateApiServiceImpl;
+import com.example.invoice.service.InvoiceMapper;
+import com.example.invoice.service.InvoiceService;
+import com.example.invoice.service.InvoiceServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.AfterClass;
@@ -48,9 +54,9 @@ public class InvoiceServiceTest
 	@Test
 	public void testInvoiceMapper() throws SQLException
 	{
-		InvoiceMapper _invoiceMapper = InvoiceServiceImpl.getInvoiceMapper();
+		InvoiceMapper invoiceMapper = InvoiceController.getInvoiceMapper();
 		List<InvoiceCreate> source = getInvoicesToTest();
-		List<Invoice> destination = source.stream().map( i -> _invoiceMapper.invoiceCreateToInvoice( i ) ).collect( Collectors.toList());
+		List<Invoice> destination = source.stream().map( i -> invoiceMapper.invoiceCreateToInvoice( i ) ).collect( Collectors.toList());
 		
 		int invoiceCount = 0;
 		for( InvoiceCreate invoiceCreate : source )
@@ -77,7 +83,7 @@ public class InvoiceServiceTest
 		}
 		
 		List<InvoiceBean> destinationBeans =
-				destination.stream().map( i -> _invoiceMapper.invoiceToInvoiceBean( i ) ).collect( Collectors.toList());
+				destination.stream().map( i -> invoiceMapper.invoiceToInvoiceBean( i ) ).collect( Collectors.toList());
 		invoiceCount = 0;
 		for( InvoiceCreate invoiceCreate : source )
 		{
@@ -107,6 +113,7 @@ public class InvoiceServiceTest
 	@Test
 	public void testInvoiceService() throws SQLException
 	{
+		InvoiceMapper invoiceMapper = InvoiceController.getInvoiceMapper();
 		EurHufRateApiService _eruoService = new EurHufRateApiServiceImpl();
 		InvoiceService _invoiceService = new InvoiceServiceImpl( _repo, _eruoService );
 		_repo.deleteAll();
@@ -114,15 +121,15 @@ public class InvoiceServiceTest
 		List<InvoiceCreate> sourceList = getInvoicesToTest();
 		for( InvoiceCreate invoiceCreate : sourceList )
 		{
-			_invoiceService.createInvoice( invoiceCreate );
+			_invoiceService.createInvoice( invoiceMapper.invoiceCreateToInvoice( invoiceCreate ) );
 		}
-		List<InvoiceBean> destinationList = _invoiceService.getAllInvoices();
+		List<Invoice> destinationList = _invoiceService.getAllInvoices();
 		assertEquals( sourceList.size(), destinationList.size() );
 		
 		int invoiceCount = 0;
 		for( InvoiceCreate source : sourceList )
 		{
-			InvoiceBean destination = destinationList.get( invoiceCount );
+			Invoice destination = destinationList.get( invoiceCount );
 			assertEquals( source.getCustomerName(), destination.getCustomerName() );
 			assertFalse( source.getCustomerName().equals( destination.getCustomerName()+"foo" ));
 			assertEquals( source.getComment(), destination.getComment() );
@@ -136,11 +143,11 @@ public class InvoiceServiceTest
 			assertTrue( Math.abs(destination.getItems().stream().mapToDouble( d -> d.getItemTotalEuroPrice() ).sum()
 					- destination.getTotalEuroPrice()) < 1  );
 			
-			List<ItemBean> destinationItems = destination.getItems();
+			List<Item> destinationItems = destination.getItems();
 			int itemCount = 0;
 			for ( ItemCreate sourceItem : source.getItems() )
 			{
-				ItemBean destinationItem = destinationItems.get( itemCount );
+				Item destinationItem = destinationItems.get( itemCount );
 				assertEquals( sourceItem.getProductName(), destinationItem.getProductName());
 				assertEquals( sourceItem.getQuantity(), destinationItem.getQuantity());
 				assertEquals( sourceItem.getUnitPrice(), destinationItem.getUnitPrice());
