@@ -2,10 +2,10 @@ package com.example.invoice.service;
 
 import java.util.stream.Collectors;
 
-import com.example.invoice.controller.bean.InvoiceBean;
-import com.example.invoice.controller.bean.InvoiceCreate;
-import com.example.invoice.controller.bean.ItemBean;
-import com.example.invoice.controller.bean.ItemCreate;
+import com.example.invoice.controller.bean.InvoiceResponse;
+import com.example.invoice.controller.bean.InvoiceRequest;
+import com.example.invoice.controller.bean.ItemResponse;
+import com.example.invoice.controller.bean.ItemRequest;
 import com.example.invoice.persistance.entity.Invoice;
 import com.example.invoice.persistance.entity.Item;
 import org.springframework.stereotype.Service;
@@ -13,20 +13,20 @@ import org.springframework.stereotype.Service;
 @Service
 public class InvoiceMapper
 {
-	public Invoice invoiceCreateToInvoice( InvoiceCreate invoiceCreate )
+	public Invoice invoiceCreateToInvoice( InvoiceRequest invoiceRequest )
 	{
 		return Invoice.builder()
-				.customerName( invoiceCreate.getCustomerName())
-				.comment( invoiceCreate.getComment() )
-				.issueDate( invoiceCreate.getIssueDate() )
-				.dueDate( invoiceCreate.getDueDate() )
-				.items( invoiceCreate.getItems().stream().map( i -> itemCreateToItem(i) ).collect( Collectors.toList()) )
+				.customerName( invoiceRequest.getCustomerName())
+				.comment( invoiceRequest.getComment() )
+				.issueDate( invoiceRequest.getIssueDate() )
+				.dueDate( invoiceRequest.getDueDate() )
+				.items( invoiceRequest.getItems().stream().map( i -> itemCreateToItem(i) ).collect( Collectors.toList()) )
 				.build();
 	}
 	
-	public InvoiceBean invoiceToInvoiceBean( Invoice invoice )
+	public InvoiceResponse invoiceToInvoiceBean( Invoice invoice )
 	{
-		return InvoiceBean.builder()
+		return InvoiceResponse.builder()
 				.id( invoice.getId() )
 				.customerName( invoice.getCustomerName())
 				.comment( invoice.getComment() )
@@ -38,18 +38,18 @@ public class InvoiceMapper
 				.build();
 	}
 	
-	private Item itemCreateToItem( ItemCreate itemCreate )
+	private Item itemCreateToItem( ItemRequest itemRequest )
 	{
 		return Item.builder()
-				.productName( itemCreate.getProductName())
-				.unitPrice( itemCreate.getUnitPrice() )
-				.quantity( itemCreate.getQuantity() )
+				.productName( itemRequest.getProductName())
+				.unitPrice( itemRequest.getUnitPrice() )
+				.quantity( itemRequest.getQuantity() )
 				.build();
 	}
 	
-	private ItemBean itemToItemBean( Item item )
+	private ItemResponse itemToItemBean( Item item )
 	{
-		return ItemBean.builder()
+		return ItemResponse.builder()
 				.productName( item.getProductName())
 				.unitPrice( item.getUnitPrice() )
 				.quantity( item.getQuantity() )

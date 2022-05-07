@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Builder
 @Value
-public class ItemBean
+public class ItemResponse
 {
 	private String productName;
 	

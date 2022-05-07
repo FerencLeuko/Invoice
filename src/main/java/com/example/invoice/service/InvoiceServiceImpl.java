@@ -3,10 +3,7 @@ package com.example.invoice.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
-import com.example.invoice.controller.bean.InvoiceBean;
-import com.example.invoice.controller.bean.InvoiceCreate;
 import com.example.invoice.exception.InvoiceNotFoundException;
 import com.example.invoice.exception.UnsupportedParameterException;
 import com.example.invoice.persistance.entity.Invoice;

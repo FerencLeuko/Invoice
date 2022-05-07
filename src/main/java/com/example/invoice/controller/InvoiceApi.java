@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import com.example.invoice.controller.bean.InvoiceBean;
-import com.example.invoice.controller.bean.InvoiceCreate;
+import com.example.invoice.controller.bean.InvoiceResponse;
+import com.example.invoice.controller.bean.InvoiceRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,19 +18,19 @@ public interface InvoiceApi
 {
 	@GetMapping( "/allInvoices" )
 	@ResponseBody
-	ResponseEntity<List<InvoiceBean>> getAllInvoices( );
+	ResponseEntity<List<InvoiceResponse>> getAllInvoices( );
 	
 	@GetMapping( "/invoices" )
 	@ResponseBody
-	ResponseEntity<List<InvoiceBean>> getInvoices(@RequestParam( value = "from" ) Integer from,
+	ResponseEntity<List<InvoiceResponse>> getInvoices(@RequestParam( value = "from" ) Integer from,
 			@RequestParam( value = "to" ) Integer to );
 	
 	@GetMapping( "/invoice" )
 	@ResponseBody
-	ResponseEntity<InvoiceBean> getInvoice(@RequestParam( value = "invoiceId" ) Integer invoiceId);
+	ResponseEntity<InvoiceResponse> getInvoice(@RequestParam( value = "invoiceId" ) Integer invoiceId);
 	
 	@PostMapping( "/invoice" )
 	@ResponseBody
-	public ResponseEntity<InvoiceBean> postInvoice(@Valid @RequestBody InvoiceCreate invoiceCreate,
+	public ResponseEntity<InvoiceResponse> postInvoice(@Valid @RequestBody InvoiceRequest invoiceRequest,
 			BindingResult errors ) throws RuntimeException;
 }

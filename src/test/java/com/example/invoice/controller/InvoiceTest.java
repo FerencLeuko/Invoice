@@ -16,11 +16,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.example.invoice.controller.InvoiceController;
-import com.example.invoice.controller.bean.InvoiceBean;
-import com.example.invoice.controller.bean.InvoiceCreate;
-import com.example.invoice.controller.bean.ItemBean;
-import com.example.invoice.controller.bean.ItemCreate;
+import com.example.invoice.controller.bean.InvoiceResponse;
+import com.example.invoice.controller.bean.InvoiceRequest;
+import com.example.invoice.controller.bean.ItemResponse;
+import com.example.invoice.controller.bean.ItemRequest;
 import com.example.invoice.persistance.entity.Invoice;
 import com.example.invoice.persistance.entity.Item;
 import com.example.invoice.persistance.repository.InvoiceRepository;
@@ -55,54 +54,54 @@ public class InvoiceTest
 	public void testInvoiceMapper() throws SQLException
 	{
 		InvoiceMapper invoiceMapper = InvoiceController.getInvoiceMapper();
-		List<InvoiceCreate> source = getInvoicesToTest();
+		List<InvoiceRequest> source = getInvoicesToTest();
 		List<Invoice> destination = source.stream().map( i -> invoiceMapper.invoiceCreateToInvoice( i ) ).collect( Collectors.toList());
 		
 		int invoiceCount = 0;
-		for( InvoiceCreate invoiceCreate : source )
+		for( InvoiceRequest invoiceRequest : source )
 		{
 			Invoice invoice = destination.get( invoiceCount );
-			assertEquals( invoiceCreate.getCustomerName(), invoice.getCustomerName() );
-			assertFalse( invoiceCreate.getCustomerName().equals( invoice.getCustomerName() + "foo" ) );
-			assertEquals( invoiceCreate.getComment(), invoice.getComment() );
-			assertEquals( invoiceCreate.getIssueDate(), invoice.getIssueDate() );
-			assertEquals( invoiceCreate.getDueDate(), invoice.getDueDate() );
-			assertEquals( invoiceCreate.getItems().size(), invoice.getItems().size() );
+			assertEquals( invoiceRequest.getCustomerName(), invoice.getCustomerName() );
+			assertFalse( invoiceRequest.getCustomerName().equals( invoice.getCustomerName() + "foo" ) );
+			assertEquals( invoiceRequest.getComment(), invoice.getComment() );
+			assertEquals( invoiceRequest.getIssueDate(), invoice.getIssueDate() );
+			assertEquals( invoiceRequest.getDueDate(), invoice.getDueDate() );
+			assertEquals( invoiceRequest.getItems().size(), invoice.getItems().size() );
 			
 			List<Item> destinationItems = invoice.getItems();
 			int itemCount = 0;
-			for( ItemCreate itemCreate : invoiceCreate.getItems() )
+			for( ItemRequest itemRequest : invoiceRequest.getItems() )
 			{
 				Item item = destinationItems.get( itemCount );
-				assertEquals( itemCreate.getProductName(), item.getProductName() );
-				assertEquals( itemCreate.getQuantity(), item.getQuantity() );
-				assertEquals( itemCreate.getUnitPrice(), item.getUnitPrice() );
+				assertEquals( itemRequest.getProductName(), item.getProductName() );
+				assertEquals( itemRequest.getQuantity(), item.getQuantity() );
+				assertEquals( itemRequest.getUnitPrice(), item.getUnitPrice() );
 				itemCount++;
 			}
 			invoiceCount++;
 		}
 		
-		List<InvoiceBean> destinationBeans =
+		List<InvoiceResponse> destinationBeans =
 				destination.stream().map( i -> invoiceMapper.invoiceToInvoiceBean( i ) ).collect( Collectors.toList());
 		invoiceCount = 0;
-		for( InvoiceCreate invoiceCreate : source )
+		for( InvoiceRequest invoiceRequest : source )
 		{
-			InvoiceBean invoiceBean = destinationBeans.get( invoiceCount );
-			assertEquals( invoiceCreate.getCustomerName(), invoiceBean.getCustomerName() );
-			assertFalse( invoiceCreate.getCustomerName().equals( invoiceBean.getCustomerName() + "foo" ) );
-			assertEquals( invoiceCreate.getComment(), invoiceBean.getComment() );
-			assertEquals( invoiceCreate.getIssueDate(), invoiceBean.getIssueDate() );
-			assertEquals( invoiceCreate.getDueDate(), invoiceBean.getDueDate() );
-			assertEquals( invoiceCreate.getItems().size(), invoiceBean.getItems().size() );
+			InvoiceResponse invoiceResponse = destinationBeans.get( invoiceCount );
+			assertEquals( invoiceRequest.getCustomerName(), invoiceResponse.getCustomerName() );
+			assertFalse( invoiceRequest.getCustomerName().equals( invoiceResponse.getCustomerName() + "foo" ) );
+			assertEquals( invoiceRequest.getComment(), invoiceResponse.getComment() );
+			assertEquals( invoiceRequest.getIssueDate(), invoiceResponse.getIssueDate() );
+			assertEquals( invoiceRequest.getDueDate(), invoiceResponse.getDueDate() );
+			assertEquals( invoiceRequest.getItems().size(), invoiceResponse.getItems().size() );
 			
-			List<ItemBean> itemBeans = invoiceBean.getItems();
+			List<ItemResponse> itemResponses = invoiceResponse.getItems();
 			int itemCount = 0;
-			for( ItemCreate itemCreate : invoiceCreate.getItems() )
+			for( ItemRequest itemRequest : invoiceRequest.getItems() )
 			{
-				ItemBean itemBean = itemBeans.get( itemCount );
-				assertEquals( itemCreate.getProductName(), itemBean.getProductName() );
-				assertEquals( itemCreate.getQuantity(), itemBean.getQuantity() );
-				assertEquals( itemCreate.getUnitPrice(), itemBean.getUnitPrice() );
+				ItemResponse itemResponse = itemResponses.get( itemCount );
+				assertEquals( itemRequest.getProductName(), itemResponse.getProductName() );
+				assertEquals( itemRequest.getQuantity(), itemResponse.getQuantity() );
+				assertEquals( itemRequest.getUnitPrice(), itemResponse.getUnitPrice() );
 				itemCount++;
 			}
 			invoiceCount++;
@@ -118,16 +117,16 @@ public class InvoiceTest
 		InvoiceService _invoiceService = new InvoiceServiceImpl( _repo, _eruoService );
 		_repo.deleteAll();
 		
-		List<InvoiceCreate> sourceList = getInvoicesToTest();
-		for( InvoiceCreate invoiceCreate : sourceList )
+		List<InvoiceRequest> sourceList = getInvoicesToTest();
+		for( InvoiceRequest invoiceRequest : sourceList )
 		{
-			_invoiceService.createInvoice( invoiceMapper.invoiceCreateToInvoice( invoiceCreate ) );
+			_invoiceService.createInvoice( invoiceMapper.invoiceCreateToInvoice( invoiceRequest ) );
 		}
 		List<Invoice> destinationList = _invoiceService.getAllInvoices();
 		assertEquals( sourceList.size(), destinationList.size() );
 		
 		int invoiceCount = 0;
-		for( InvoiceCreate source : sourceList )
+		for( InvoiceRequest source : sourceList )
 		{
 			Invoice destination = destinationList.get( invoiceCount );
 			assertEquals( source.getCustomerName(), destination.getCustomerName() );
@@ -145,7 +144,7 @@ public class InvoiceTest
 			
 			List<Item> destinationItems = destination.getItems();
 			int itemCount = 0;
-			for ( ItemCreate sourceItem : source.getItems() )
+			for ( ItemRequest sourceItem : source.getItems() )
 			{
 				Item destinationItem = destinationItems.get( itemCount );
 				assertEquals( sourceItem.getProductName(), destinationItem.getProductName());
@@ -243,37 +242,37 @@ public class InvoiceTest
 		}
 	}
 	
-	private List<InvoiceCreate> getInvoicesToTest()
+	private List<InvoiceRequest> getInvoicesToTest()
 	{
-		ItemCreate item1 = ItemCreate.builder().productName( "A" ).quantity( 1 ).unitPrice( 1d ).build();
-		ItemCreate item2 = ItemCreate.builder().productName( "B" ).quantity( 4 ).unitPrice( 3000d ).build();
-		ItemCreate item3 = ItemCreate.builder().productName( "C" ).quantity( 4000 ).unitPrice( 2d ).build();
-		ItemCreate item4 = ItemCreate.builder().productName( "D" ).quantity( 5000 ).unitPrice( 3.9d ).build();
-		ItemCreate item5 = ItemCreate.builder().productName( "E" ).quantity( 12 ).unitPrice( 32.3d ).build();
+		ItemRequest item1 = ItemRequest.builder().productName( "A" ).quantity( 1 ).unitPrice( 1d ).build();
+		ItemRequest item2 = ItemRequest.builder().productName( "B" ).quantity( 4 ).unitPrice( 3000d ).build();
+		ItemRequest item3 = ItemRequest.builder().productName( "C" ).quantity( 4000 ).unitPrice( 2d ).build();
+		ItemRequest item4 = ItemRequest.builder().productName( "D" ).quantity( 5000 ).unitPrice( 3.9d ).build();
+		ItemRequest item5 = ItemRequest.builder().productName( "E" ).quantity( 12 ).unitPrice( 32.3d ).build();
 		
-		List<InvoiceCreate> invoices = new ArrayList<>();
+		List<InvoiceRequest> invoices = new ArrayList<>();
 		
-		InvoiceCreate invoice1 = InvoiceCreate.builder()
+		InvoiceRequest invoice1 = InvoiceRequest.builder()
 				.customerName( "C1" )
 				.comment( "Invoice1" )
 				.issueDate( LocalDate.of( 2020, 01, 01 ) )
 				.dueDate( LocalDate.of( 2020, 01, 10 ) )
-				.items( Arrays.asList( new ItemCreate[]{item1, item2} ) )
+				.items( Arrays.asList( new ItemRequest[]{item1, item2} ) )
 				.build();
 		
-		InvoiceCreate invoice2 = InvoiceCreate.builder()
+		InvoiceRequest invoice2 = InvoiceRequest.builder()
 				.customerName( "C2" )
 				.comment( "Invoice2" )
 				.issueDate( LocalDate.of( 2020, 02, 01 ) )
 				.dueDate( LocalDate.of( 2020, 02, 10 ) )
-				.items( Arrays.asList( new ItemCreate[]{item3, item4} ) )
+				.items( Arrays.asList( new ItemRequest[]{item3, item4} ) )
 				.build();
 		
-		InvoiceCreate invoice3 = InvoiceCreate.builder()
+		InvoiceRequest invoice3 = InvoiceRequest.builder()
 				.customerName( "C2" )
 				.issueDate( LocalDate.of( 2020, 02, 01 ) )
 				.dueDate( LocalDate.of( 2020, 02, 10 ) )
-				.items( Arrays.asList( new ItemCreate[]{ item5 } ) )
+				.items( Arrays.asList( new ItemRequest[]{ item5 } ) )
 				.build();
 		
 		invoices.add( invoice1 );

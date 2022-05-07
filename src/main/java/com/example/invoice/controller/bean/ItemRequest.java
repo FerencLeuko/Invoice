@@ -15,7 +15,7 @@ import org.springframework.validation.annotation.Validated;
 @Builder
 @Getter
 @Setter
-public class ItemCreate
+public class ItemRequest
 {
 	@NotNull
 	@NotBlank

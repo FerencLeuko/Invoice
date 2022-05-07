@@ -8,7 +8,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class InvoiceBean
+public class InvoiceResponse
 {
 	private Integer id;
 	
@@ -24,5 +24,5 @@ public class InvoiceBean
 	
 	private String comment;
 	
-	private List<ItemBean> items;
+	private List<ItemResponse> items;
 }

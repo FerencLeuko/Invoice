@@ -9,17 +9,17 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import org.springframework.validation.annotation.Validated;
 
 @Builder
 @Validated
 @Getter
 @Setter
-public final class InvoiceCreate
+public final class InvoiceRequest
 {
 	@NotNull
 	@NotBlank
@@ -28,9 +28,11 @@ public final class InvoiceCreate
 	private String customerName;
 	
 	@NotNull
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate issueDate;
 	
 	@NotNull
+	@JsonFormat(pattern="yyyy-MM-dd")
 	private LocalDate dueDate;
 	
 	@Size(min = 2, max = 50, message
@@ -40,5 +42,5 @@ public final class InvoiceCreate
 	@NotNull
 	@NotEmpty
 	@Valid
-	private List<ItemCreate> items;
+	private List<ItemRequest> items;
 }

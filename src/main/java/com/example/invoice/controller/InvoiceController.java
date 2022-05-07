@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import com.example.invoice.controller.bean.InvoiceBean;
-import com.example.invoice.controller.bean.InvoiceCreate;
+import com.example.invoice.controller.bean.InvoiceResponse;
+import com.example.invoice.controller.bean.InvoiceRequest;
 import com.example.invoice.exception.ErrorResponse;
 import com.example.invoice.exception.InvoiceNotFoundException;
 import com.example.invoice.exception.InvoiceValidationException;
@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://127.0.0.1:5500/" , "http://127.0.0.1:4200/", "http://127.0.0.1:4201/"} )
+@CrossOrigin(origins = "http://localhost:4200" )
 public class InvoiceController implements InvoiceApi
 {
 	private static final String PATH = "localhost:8081";
 	
 	@Override
-	public ResponseEntity<List<InvoiceBean>> getAllInvoices( )
+	public ResponseEntity<List<InvoiceResponse>> getAllInvoices( )
 	{
 		List<Invoice> allInvoices = _invoiceService.getAllInvoices();
 		return ResponseEntity.ok(
@@ -41,7 +41,7 @@ public class InvoiceController implements InvoiceApi
 	}
 	
 	@Override
-	public ResponseEntity<List<InvoiceBean>> getInvoices(Integer from, Integer to )
+	public ResponseEntity<List<InvoiceResponse>> getInvoices(Integer from, Integer to )
 	{
 		List<Invoice> invoices = _invoiceService.getInvoices( from, to );
 		return ResponseEntity.ok(
@@ -51,14 +51,14 @@ public class InvoiceController implements InvoiceApi
 	}
 	
 	@Override
-	public ResponseEntity<InvoiceBean> getInvoice( Integer invoiceId )
+	public ResponseEntity<InvoiceResponse> getInvoice( Integer invoiceId )
 	{
 		Invoice invoice = _invoiceService.getInvoice( invoiceId );
 		return ResponseEntity.ok( _invoiceMapper.invoiceToInvoiceBean( invoice ) );
 	}
 	
 	@Override
-	public ResponseEntity<InvoiceBean> postInvoice( InvoiceCreate invoiceCreate, BindingResult errors ) throws RuntimeException
+	public ResponseEntity<InvoiceResponse> postInvoice( InvoiceRequest invoiceRequest, BindingResult errors ) throws RuntimeException
 	{
 		if (errors.hasErrors()) {
 			throw new ValidationException( String.valueOf( errors.getAllErrors()
@@ -67,7 +67,7 @@ public class InvoiceController implements InvoiceApi
 					.collect( Collectors.toList())));
 		}
 		
-		Invoice invoiceSource = _invoiceMapper.invoiceCreateToInvoice( invoiceCreate );
+		Invoice invoiceSource = _invoiceMapper.invoiceCreateToInvoice( invoiceRequest );
 		
 		Invoice invoiceCreated = _invoiceService.createInvoice( invoiceSource );
 		URI location = URI.create( PATH + "/invoice/?invoiceId=" + invoiceSource.getId() );
